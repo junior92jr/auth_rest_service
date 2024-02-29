@@ -40,3 +40,7 @@ class PasswordCreatedResponse(BaseModel):
     """Data class model that handles Auth Token response."""
 
     message: str
+
+
+class PasswordRessetedResponse(PasswordCreatedResponse):
+    """Data class model that handles Auth Token response."""

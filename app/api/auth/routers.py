@@ -11,7 +11,7 @@ from app.api.auth.schemas import (
     RecoverPasswordRequest,
     AuthTokenResponse,
     PasswordCreatedResponse,
-    UserResponse
+    PasswordRessetedResponse
 )
 from app.api.auth.models import AuthUser
 
@@ -66,12 +66,12 @@ def recover_password(
         message=f"New Credentials Created for {customer.email}.")
 
 
-@router.post("/reset-password", response_model=UserResponse)
+@router.post("/reset-password", response_model=PasswordRessetedResponse)
 def reset_password(
         request: ResetPasswordRequest,
         authenticate_user: annotated_auth_user,
         database_session: Session = Depends(get_session),
-        client_version: str = Header(...)) -> UserResponse:
+        client_version: str = Header(...)) -> PasswordRessetedResponse:
     """Reset password for an importend customer and update AutUser."""
 
     version_controller.is_valid_version(client_version)
@@ -82,16 +82,18 @@ def reset_password(
     user = user_controller.update_user_password(
         authenticate_user, request.new_password, database_session)
 
-    return UserResponse(**user.columns_to_dict())
+    return PasswordRessetedResponse(
+        message=f"New Credentials Created for {user.username}.")
 
 
 @router.post("/login")
 def login_for_access_token(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-        database_session: Session = Depends(get_session)) -> AuthTokenResponse:
+        database_session: Session = Depends(get_session),
+        client_version: str = Header(...)) -> AuthTokenResponse:
     """Authenticate with credentials and gets a valid auth token."""
 
-    # version_controller.is_valid_version(client_version)
+    version_controller.is_valid_version(client_version)
 
     user = user_controller.authenticate_user(
         form_data.username, form_data.password, database_session)

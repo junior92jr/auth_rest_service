@@ -115,7 +115,7 @@ def test_authenticated_reset_password() -> None:
         "/auth/reset-password",
         headers={
             "client-version": "3.2.1",
-            "Authorization" : f"Bearer {access_token}"
+            "Authorization": f"Bearer {access_token}"
         },
         json={
             "old_password": "password123",
@@ -126,5 +126,5 @@ def test_authenticated_reset_password() -> None:
     json_response = response.json()
 
     assert response.status_code == 200
-    assert json_response["username"] == "sbahtgijwovhje@gmail.com"
-    assert json_response["is_active"] is True
+    expected_detail = "New Credentials Created for sbahtgijwovhje@gmail.com."
+    assert json_response["message"] == expected_detail

@@ -16,6 +16,8 @@ This API implements the following endpoints:
 
 `PUT` : `/customers/me/edit-data` Whene authenticatee you can edit your customer information.
 
+## API Restrictions
+`--header 'client-version: 3.1.2'` is mandatory header for all endpoints regardless authentication. The minimum version accepted is `2.1.0`.
 
 ## API Examples
 
@@ -54,19 +56,6 @@ In the response we can get the access token to be used in the other endpoins.
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1Y2dqdGJkdXN3aWVqamFAaWNsb3VkLmNvbSIsImV4cCI6MTcwOTE5MzUxOX0.N_CkArOmADj8CvGf_Bq6hS-Z038KhEQ3lc-iolrEj6M",
     "token_type": "bearer"
 }
-```
-
-To Change your password
-
-```bash
-curl --location 'http://localhost:8002/auth/reset-password' \
---header 'client-version: 3.1.2' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1Y2dqdGJkdXN3aWVqamFAaWNsb3VkLmNvbSIsImV4cCI6MTcwOTE5Mzg3OX0.vgYgyTT3JBLyOLq9vickwhVs6MDceFyR03-CwPVI4pc' \
---data '{
-    "old_password": "newpassword123",
-    "new_password": "newpassword321"
-}'
 ```
 
 To check your customer information
@@ -110,6 +99,18 @@ response would be something like
 }
 ```
 
+additionally to edit your password when authenticated
+
+```bash
+curl --location 'http://localhost:8002/auth/reset-password' \
+--header 'client-version: 3.1.2' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1Y2dqdGJkdXN3aWVqamFAaWNsb3VkLmNvbSIsImV4cCI6MTcwOTE5Mzg3OX0.vgYgyTT3JBLyOLq9vickwhVs6MDceFyR03-CwPVI4pc' \
+--data '{
+    "old_password": "newpassword123",
+    "new_password": "newpassword321"
+}'
+```
 
 ## Clone the repository
 
@@ -162,10 +163,6 @@ Whereas the database will be exposed to the `web` service. To make sure the
 app is running correctly open [http://localhost:8002](http://localhost:8002) in 
 your web browser (and/or run `docker-compose logs -f` from the command line).
 
-For using the swagger interface with example payloads open
-in your web browser [http://localhost:8002/docs](http://localhost:8002/docs) 
-
-
 ## Create the Database
 
 The database will be created by running the `create_db.sql` file that will be 
@@ -187,6 +184,14 @@ Next, one can connect to the `web_dev` database and list all the tables:
 ```bash
 # \c web_dev
 # \dt
+```
+
+## Import the customer file
+
+There is a command that import customer json files. I needs to be in the exported json format.
+
+```bash
+docker-compose exec web python scripts/import_customers.py 'resources/data/customer_export.json'
 ```
 
 ## Run the Tests
