@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./
+      dockerfile: dockerfiles/app.dockerfile
+    command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
+    container_name: fastapi-app
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - 8002:8000
+    environment:
+      - PYTHONPATH=${PYTHONPATH}
+      - PROJECT_NAME=${PROJECT_NAME}
+      - DESCRIPTION=${DESCRIPTION}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - VERSION=${VERSION}
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_TEST_URL=${DATABASE_TEST_URL}
+      - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - FIXED_RECOVERY_CODE=${FIXED_RECOVERY_CODE}
+    depends_on:
+      - web-db
+  web-db:
+    build:
+      context: ./
+      dockerfile: dockerfiles/db.dockerfile
+    container_name: fastapi-db
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
